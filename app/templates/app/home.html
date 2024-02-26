@@ -83,7 +83,7 @@
     {% comment %} document.getElementById('message-display').value = `Server: ${str_obj.count}\n${document.getElementById('message-display').value}`; {% endcomment %}
 
     <div class="chat-container">
-        <div class="chat-header">Professional Chat:{{group}} Group</div>
+        <div class="chat-header" style="text-transform:capitalize;">Professional Chat: {{ group }} Group</div>
         {% comment %} <select id="country-select" class="country-select"></select> {% endcomment %}
 
         <input type="text" class="message-input" id="message-input" placeholder="Type your message...">
@@ -93,9 +93,9 @@
     <div class="chat-container">
         <div class="chat-header">Server Messages</div>
         <textarea class="message-input" rows="6" col="100" id="message-display" placeholder="Server messages will appear here..." readonly>
-            {% comment %} {% for chat  in chats %}
-            {{chat}}
-            {% endfor %} {% endcomment %}
+          {% for chat in chats %}
+            {{chat.content}}
+        {% endfor %} 
 
 
         </textarea>
