@@ -25,24 +25,40 @@ class MyAsyncConsumer(AsyncConsumer):
         print("Message received Details",event)
         print("Message received from Client",event['text'],type(event['text']))
         data=json.loads(event['text'])
+        print("YOUR DATA IS ",data)
         group=await database_sync_to_async(Group.objects.get)(group=self.GroupChat) #find group object
+    
         #create New Chat objects
-        chats=Chat(
-            content=data['msg'],
-            group_name=group
-        )
-        await database_sync_to_async(chats.save)()
-        await self.channel_layer.group_send(self.GroupChat,{
-            'type':'chat.message',
-            'message':event['text']
-        })
+        print(self.scope['user'].username)
+        if self.scope['user'].is_authenticated:
+            chats=Chat(
+                content=data['msg'],
+                group_name=group,
+                user=self.scope['user'].username
+            )
+            data['user']=self.scope['user'].username
+            await database_sync_to_async(chats.save)()
+            print("DATA......",data)
+            await self.channel_layer.group_send(self.GroupChat,{
+                'type':'chat.message',
+                'message':json.dumps(data),
+                
+            })
+        else:
+            await self.send(
+                    {
+                        'type':'websocket.send',
+                        'text':json.dumps({"msg":"Login Required"}),
+                        'user':"Guests"
+                    })
     async def chat_message(self,event):
             print(event)
             print(event['message'])
             print(type(event['message']))
             await self.send({
                 "type":'websocket.send', #this message first receive from the Client and then again it is same pass to the server
-                "text":event['message']
+                "text":event['message'],
+                
             })
         
 

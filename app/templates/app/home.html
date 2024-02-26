@@ -119,7 +119,7 @@
             console.log("Message Received from the server . . . ",typeof(event.data))
             const mesg_obj=JSON.parse(event.data)
 
-            document.querySelector("#message-display").value += (mesg_obj.msg + '\n')
+            document.querySelector("#message-display").value += (mesg_obj.user + mesg_obj.msg + '\n')
 
             console.log("h",(mesg_obj))
             console.log(typeof(mesg_obj))
