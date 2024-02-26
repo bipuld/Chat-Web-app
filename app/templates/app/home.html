@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Professional Chat App</title>
     <style>
+        .country-select {
+            width: 100%;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(to bottom, #2980b9, #3498db);
@@ -67,24 +70,45 @@
             background-color: #2980b9;
         }
     </style>
+    <!-- Flag icons CSS -->
+    {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+
+    <!-- Select2 CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script> {% endcomment %}
+
+
 </head>
 <body>
     {% comment %} document.getElementById('message-display').value = `Server: ${str_obj.count}\n${document.getElementById('message-display').value}`; {% endcomment %}
 
     <div class="chat-container">
-        <div class="chat-header">Professional Chat</div>
+        <div class="chat-header">Professional Chat:{{group}} Group</div>
+        {% comment %} <select id="country-select" class="country-select"></select> {% endcomment %}
+
         <input type="text" class="message-input" id="message-input" placeholder="Type your message...">
         <button class="send-button" id="message-submit">Send</button>
     </div>
 
     <div class="chat-container">
         <div class="chat-header">Server Messages</div>
-        <textarea class="message-input" rows="6" col="100" id="message-display" placeholder="Server messages will appear here..." readonly></textarea>
-    </div>
+        <textarea class="message-input" rows="6" col="100" id="message-display" placeholder="Server messages will appear here..." readonly>
+            {% comment %} {% for chat  in chats %}
+            {{chat}}
+            {% endfor %} {% endcomment %}
 
+
+        </textarea>
+    </div>
+    {{group|json_script:"Chat_group"}} 
     <script type="text/javascript">
-        var ws = new WebSocket('ws://127.0.0.1:4444/ws/asc/')
-    
+    const Chat_Group = JSON.parse(document.getElementById("Chat_group").textContent);
+    var ws = new WebSocket('ws://' +
+    window.location.host +
+    '/ws/asc/' +
+    Chat_Group + 
+    '/');
+        console.log('Chat_Group')
         ws.onopen=function(event){
             console.log("Connection Established With WebSocket....",event)
             
@@ -122,5 +146,41 @@
             messageInputDom.value=''
          }
     </script>
+    {% comment %} <script>
+        function populateCountrySelect() {
+            const countrySelect = document.getElementById('country-select');
+            const countries = [
+                { code: 'us', name: 'United States' },
+                { code: 'gb', name: 'United Kingdom' },
+                // Add more countries as needed
+            ];
+
+            countries.forEach(country => {
+                const option = new Option(country.name, country.code);
+                $(option).data('flag', country.code.toLowerCase());
+
+                countrySelect.append(option);
+            });
+
+            // Initialize Select2 for enhanced styling
+            $('#country-select').select2({
+                templateSelection: formatCountryOption,
+                templateResult: formatCountryOption
+            });
+        }
+
+        // Call the function to populate the country select field
+        populateCountrySelect();
+
+        // Function to format country options with flag icons
+        function formatCountryOption(option) {
+            if (!option.id) {
+                return option.text;
+            }
+
+            const flagIcon = `<span class="flag-icon flag-icon-${$(option.element).data('flag')}"></span>`;
+            return flagIcon + option.text;
+        }
+    </script> {% endcomment %}
 </body>
 </html>

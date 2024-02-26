@@ -3,5 +3,6 @@ from . import views
 
 urlpatterns = [
     # ... your existing URL patterns ...
-    path('', views.home,name="views"),
+    path('<str:groupname>/', views.home,name="views"),
+    
 ]
